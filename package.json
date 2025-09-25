@@ -16,7 +16,7 @@
     "theme"
   ],
   "scripts": {
-    "dev": "concurrently -rkP 'shopify theme dev {@}' 'vite'",
+    "dev": "concurrently -rkP 'shopify theme dev --store=isiescasany.myshopify.com' 'vite'",
     "build": "vite build",
     "deploy": "pnpm run build && shopify theme push",
     "format": "prettier --write --cache .",
