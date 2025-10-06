@@ -1,0 +1,134 @@
+{% if article %}
+<div class="space-y-8">
+  {% comment %} Article Header {% endcomment %}
+  <div class="space-y-4">
+    {% comment %} Back to Blog Link {% endcomment %}
+    <div>
+      <a href="{{ blog.url }}" class="group inline-flex items-center text-white/60 hover:text-white transition-colors">
+        ← Back to {{ blog.title }}
+      </a>
+    </div>
+
+    {% comment %} Article Title and Meta {% endcomment %}
+    <div class="space-y-4">
+      <h1 class="text-3xl md:text-4xl font-medium">{{ article.title }}</h1>
+      
+      {% comment %} Article Metadata {% endcomment %}
+      <div class="flex flex-wrap items-center gap-4 text-sm text-white/60">
+        <span>{{ article.published_at | date: '%B %d, %Y' }}</span>
+        {% if article.author != blank %}
+          <span>•</span>
+          <span>By {{ article.author }}</span>
+        {% endif %}
+        {% if article.tags.size > 0 %}
+          <span>•</span>
+          <div class="flex flex-wrap gap-2">
+            {% for tag in article.tags %}
+              <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="hover:text-white transition-colors">
+                #{{ tag }}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} Featured Image {% endcomment %}
+    {% if article.image %}
+      <div class="aspect-[16/9] bg-amber-100/10 overflow-hidden rounded">
+        {{ article.image | image_url: width: 1200 | image_tag: widths: '600,800,1200', sizes: '100vw', class: 'w-full h-full object-cover' }}
+      </div>
+    {% endif %}
+  </div>
+
+  {% comment %} Article Content {% endcomment %}
+  <div class="prose prose-invert prose-lg max-w-none">
+    <div class="text-white/90 leading-relaxed space-y-6">
+      {{ article.content }}
+    </div>
+  </div>
+
+  {% comment %} Article Footer {% endcomment %}
+  <div class="border-t border-white/10 pt-8 space-y-6">
+    {% comment %} Social Sharing {% endcomment %}
+    <div class="space-y-3">
+      <h3 class="text-lg">Share this article</h3>
+      <div class="flex gap-3">
+        <a href="https://twitter.com/intent/tweet?text={{ article.title | url_encode }}&url={{ shop.url }}{{ article.url }}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded">
+          Twitter
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded">
+          Facebook
+        </a>
+        <a href="mailto:?subject={{ article.title | url_encode }}&body=Check out this article: {{ shop.url }}{{ article.url }}" 
+           class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded">
+          Email
+        </a>
+      </div>
+    </div>
+
+    {% comment %} Related Articles {% endcomment %}
+    {% assign related_articles = blog.articles %}
+    {% assign related_articles = related_articles | where: 'id', '!=', article.id %}
+    {% assign related_articles = related_articles | slice: 0, 3 %}
+    {% if related_articles.size > 0 %}
+      <div class="space-y-4">
+        <h3 class="text-lg">Related Articles</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {% for related_article in related_articles %}
+            <article class="space-y-3">
+              {% if related_article.image %}
+                <a href="{{ related_article.url }}" class="block aspect-[4/3] bg-amber-100/10 overflow-hidden rounded">
+                  {{ related_article.image | image_url: width: 400 | image_tag: widths: '200,400', sizes: '(min-width: 768px) 33vw, 100vw', class: 'w-full h-full object-cover' }}
+                </a>
+              {% endif %}
+              <div class="space-y-2">
+                <h4 class="text-lg">
+                  <a href="{{ related_article.url }}" class="hover:underline">{{ related_article.title }}</a>
+                </h4>
+                <p class="text-sm text-white/60">{{ related_article.published_at | date: '%B %d, %Y' }}</p>
+                {% if related_article.excerpt != blank %}
+                  <p class="text-sm text-white/80 line-clamp-2">{{ related_article.excerpt }}</p>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} Back to Blog CTA {% endcomment %}
+    <div class="text-center pt-6">
+      <a href="{{ blog.url }}" 
+         class="inline-flex items-center px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium">
+        View All Articles
+        <span class="arrow-icon" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+{% else %}
+  <div class="text-center py-12">
+    <h1 class="text-2xl mb-4">Article not found</h1>
+    <p class="text-white/60 mb-6">The article you're looking for doesn't exist.</p>
+    <a href="{{ blog.url }}" 
+       class="inline-flex items-center px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium">
+      Back to Blog
+    </a>
+  </div>
+{% endif %}
+
+{% render 'cta-callout' %}
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": []
+}
+{% endschema %}

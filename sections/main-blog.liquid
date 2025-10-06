@@ -1,0 +1,150 @@
+<div class="space-y-8">
+  {% comment %} Blog Header {% endcomment %}
+  <div class="space-y-6">
+    {% render 'page-description', title: blog.title, description: blog.description %}
+    
+    {% comment %} Blog Tags Filter {% endcomment %}
+    {% if blog.all_tags.size > 0 %}
+      <div class="space-y-3">
+        <h3 class="text-lg">Filter by topic</h3>
+        <div class="flex flex-wrap gap-2">
+          <a href="{{ blog.url }}" 
+             class="px-3 py-1 border border-white/10 hover:bg-white hover:text-black transition-colors rounded text-sm {% unless current_tags %}bg-white text-black{% endunless %}">
+            All
+          </a>
+          {% for tag in blog.all_tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+               class="px-3 py-1 border border-white/10 hover:bg-white hover:text-black transition-colors rounded text-sm {% if current_tags contains tag %}bg-white text-black{% endif %}">
+              {{ tag }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {% comment %} Articles Grid {% endcomment %}
+  {% if blog.articles.size > 0 %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for article in blog.articles %}
+        <article class="group space-y-4">
+          {% comment %} Article Image {% endcomment %}
+          {% if article.image %}
+            <a href="{{ article.url }}" class="block aspect-[4/3] bg-amber-100/10 overflow-hidden rounded">
+              {{ article.image | image_url: width: 600 | image_tag: widths: '300,600', sizes: '(min-width: 768px) 50vw, (min-width: 1024px) 33vw, 100vw', class: 'w-full h-full object-cover group-hover:scale-110 group-hover:-rotate-1 transition-transform duration-500' }}
+            </a>
+          {% else %}
+            <a href="{{ article.url }}" class="flex aspect-[4/3] bg-amber-100/10 overflow-hidden rounded items-center justify-center">
+              <span class="text-white/40">No image</span>
+            </a>
+          {% endif %}
+
+          {% comment %} Article Content {% endcomment %}
+          <div class="space-y-3">
+            {% comment %} Article Meta {% endcomment %}
+            <div class="flex flex-wrap items-center gap-2 text-sm text-white/60">
+              <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                {{ article.published_at | date: '%B %d, %Y' }}
+              </time>
+              {% if article.author != blank %}
+                <span>•</span>
+                <span>By {{ article.author }}</span>
+              {% endif %}
+            </div>
+
+            {% comment %} Article Title {% endcomment %}
+            <h2 class="text-xl font-medium">
+              <a href="{{ article.url }}" class="hover:underline">{{ article.title }}</a>
+            </h2>
+
+            {% comment %} Article Excerpt {% endcomment %}
+            {% if article.excerpt != blank %}
+              <p class="text-white/80 line-clamp-3">{{ article.excerpt }}</p>
+            {% elsif article.content != blank %}
+              <p class="text-white/80 line-clamp-3">{{ article.content | strip_html | truncate: 150 }}</p>
+            {% endif %}
+
+            {% comment %} Article Tags {% endcomment %}
+            {% if article.tags.size > 0 %}
+              <div class="flex flex-wrap gap-2">
+                {% for tag in article.tags %}
+                  <a href="{{ blog.url }}/tagged/{{ tag | handle }}" 
+                     class="text-xs text-white/60 hover:text-white transition-colors">
+                    #{{ tag }}
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% comment %} Read More Link {% endcomment %}
+            <div>
+              <a href="{{ article.url }}" 
+                 class="group inline-flex items-center text-sm hover:text-white transition-colors">
+                Read more
+                <span class="arrow-icon ml-1" aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% comment %} Pagination {% endcomment %}
+    {% if paginate.pages > 1 %}
+      <div class="border-t border-white/10 pt-8">
+        <nav class="flex justify-center items-center space-x-4" aria-label="Blog pagination">
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}" 
+               class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded">
+              Previous
+            </a>
+          {% endif %}
+
+          <div class="flex items-center space-x-2">
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <a href="{{ part.url }}" 
+                   class="px-3 py-1 border border-white/10 hover:bg-white hover:text-black transition-colors rounded text-sm">
+                  {{ part.title }}
+                </a>
+              {% else %}
+                <span class="px-3 py-1 {% if part.title == paginate.current_page %}bg-white text-black{% else %}text-white/60{% endif %} text-sm">
+                  {{ part.title }}
+                </span>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}" 
+               class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded">
+              Next
+            </a>
+          {% endif %}
+        </nav>
+      </div>
+    {% endif %}
+  {% else %}
+    {% comment %} No Articles State {% endcomment %}
+    <div class="text-center py-12">
+      <h2 class="text-2xl mb-4">No articles found</h2>
+      <p class="text-white/60">
+        {% if current_tags %}
+          No articles found with the tag "{{ current_tags.first }}".
+          <a href="{{ blog.url }}" class="underline hover:text-white">View all articles</a>
+        {% else %}
+          This blog doesn't have any articles yet.
+        {% endif %}
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+{% render 'cta-callout' %}
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": []
+}
+{% endschema %}

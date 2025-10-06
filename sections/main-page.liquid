@@ -1,0 +1,30 @@
+<div class="space-y-8">
+  <div class="max-w-4xl mx-auto">
+    {% comment %} Page Header {% endcomment %}
+    <div class="space-y-6">
+      <h1 class="text-3xl md:text-4xl font-medium">{{ page.title }}</h1>
+      
+      {% comment %} Page Content {% endcomment %}
+      {% if page.content != blank %}
+        <div class="prose prose-invert prose-lg max-w-none">
+          <div class="text-white/90 leading-relaxed space-y-6">
+            {{ page.content }}
+          </div>
+        </div>
+      {% else %}
+        <div class="prose prose-invert prose-lg max-w-none">
+          <div class="text-white/90 leading-relaxed space-y-6">
+            {{ content_for_index }}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Page Sections (if using page builder) {% endcomment %}
+    {% if content_for_index contains 'section' %}
+      <div class="space-y-8">
+        {{ content_for_index }}
+      </div>
+    {% endif %}
+  </div>
+</div>
