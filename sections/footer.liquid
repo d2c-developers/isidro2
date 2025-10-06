@@ -1,5 +1,17 @@
-<footer class="p-6 text-white/60">
-  <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+<footer class="p-6 flex flex-col gap-6">
+  <nav>
+    <ul class="flex flex-col gap-3 md:flex-row">
+      <li>
+        <a href="{{ routes.root_url }}">{{ shop.name }}</a>
+      </li>
+      {% for link in linklists.footer.links %}
+        <li>
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <p class="text-white/60">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
 </footer>
 
 {% schema %}
