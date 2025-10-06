@@ -4,11 +4,9 @@
 {% endif %}
 
 <div class="space-y-6">
-  {% comment %} Home Page Text {% endcomment %}
   {% render 'page-description', description: section.settings.home_page_text %}
-  
-  {% comment %} Product Grid {% endcomment %}
   {% render 'product-grid', collection: home_collection %}
+  {% render 'cta-callout' %}
 </div>
 
 

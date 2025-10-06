@@ -1,0 +1,29 @@
+{% assign page_description = "The page you're looking for seems to have wandered off like a lost sketch. Let's get you back to exploring the " | append: shop.name | append: " collection." %}
+<div class="space-y-12">
+  {% render 'page-description',
+    title: '404 - Page Not Found',
+    description: page_description
+  %}
+
+  <div class="space-y-6">
+    <h3 class="text-xl text-white/60">Where would you like to go?</h3>
+    <ul class="space-y-6 md:space-y-12">
+      <li>
+        {% render 'collection-link', href: routes.root_url, title: 'Home' %}
+      </li>
+      <li>
+        {% render 'collection-link', href: routes.collections_url, title: 'Collections' %}
+      </li>
+      <li>
+        {% render 'collection-link', href: routes.all_products_collection_url, title: 'All Products' %}
+      </li>
+    </ul>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404 Page",
+  "settings": []
+}
+{% endschema %}

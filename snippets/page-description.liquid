@@ -1,14 +1,14 @@
 <div class="space-y-3">
   {% if title != blank %}
     <h1>
-      {% unless template contains'list-collections' %}Series: {% endunless %}
+      {% unless template contains'list-collections' or template contains '404' %}Series: {% endunless %}
       {{ title }}
     </h1>
   {% endif %}
 
   {% if description != blank %}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <div class="col-span-4 md:col-span-2 text-xl">{{ description }}</div>
+      <div class="col-span-4 md:col-span-2 text-xl text-white/60">{{ description }}</div>
     </div>
   {% endif %}
 </div>

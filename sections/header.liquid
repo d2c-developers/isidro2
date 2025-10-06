@@ -9,7 +9,7 @@
       {% endfor %}
     </nav>
   </div>
-  <div class="flex flex-col md:items-end justify-end gap-1 shrink-0">
+  <div class="flex flex-col md:items-end justify-end gap-1 shrink-0 text-white/60">
     {% for block in section.blocks %}
       {% if block.type == 'info_line' %}
         <p>{{ block.settings.text }}</p>

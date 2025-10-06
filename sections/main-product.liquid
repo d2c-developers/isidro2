@@ -1,0 +1,78 @@
+{% if product %}
+<div class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+    {% comment %} PRODUCT IMAGES {% endcomment %}
+    <div class="space-y-4">
+      {% assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media %}
+      {% if featured_media %}
+        <div class="aspect-[4/5] bg-amber-100/10 overflow-hidden relative">
+          {{ featured_media | image_url: width: 1200 | image_tag: widths: '600,800,1200', sizes: '(min-width: 768px) 50vw, 100vw', class: 'w-full h-full object-cover absolute inset-0' }}
+        </div>
+      {% endif %}
+
+      {% if product.media.size > 1 %}
+        <div class="grid grid-cols-4 md:grid-cols-6 gap-3">
+          {% for media in product.media %}
+            <button type="button" class="omit-effect aspect-[4/5] overflow-hidden bg-amber-100/10 relative" aria-label="View media {{ forloop.index }}" data-media-id="{{ media.id }}">
+              {{ media | image_url: width: 400 | image_tag: widths: '200,400', sizes: '(min-width: 768px) 16vw, 25vw', class: 'w-full h-full object-cover absolute inset-0' }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="space-y-6">
+      {% render 'product-page-description', title: product.title, description: product.description %}
+
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="space-y-4">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+        {% if product.has_only_default_variant == false %}
+          {% for option in product.options_with_values %}
+            <div class="space-y-2">
+              <label for="Option-{{ section.id }}-{{ forloop.index0 }}" class="block">{{ option.name }}</label>
+              <select id="Option-{{ section.id }}-{{ forloop.index0 }}" name="options[{{ option.name }}]" class="w-full border border-white/10 p-3 bg-transparent rounded text-lg">
+                {% for value in option.values %}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="space-y-2">
+          <label for="Quantity-{{ section.id }}" class="block">Quantity</label>
+          <input id="Quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1" class="w-full border border-white/10 p-3 bg-transparent rounded text-lg" inputmode="numeric" pattern="[0-9]*">
+        </div>
+
+        <button
+          type="submit"
+          name="add"
+          class="w-full px-4 py-3 border border-white/10 transition-colors disabled:opacity-50 disabled:pointer-events-none hover:bg-white bg-white/10 rounded hover:text-black text-lg cursor-pointer"
+          {% if product.selected_or_first_available_variant.available == false%}
+            disabled
+          {% endif %}
+        >
+          {% if product.selected_or_first_available_variant.available %}
+            Add to Cart
+            <span class="arrow-icon" aria-hidden="true">→</span>
+          {% else %}
+            Sold out
+          {% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% else %}
+  <p>Product not found.</p>
+{% endif %}
+
+{% render 'cta-callout' %}
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": []
+}
+{% endschema %}
