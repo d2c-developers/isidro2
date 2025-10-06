@@ -41,6 +41,7 @@ a.omit-effect::after {
   display: inline-block;
   margin-left: 0.25em;
   transition: transform 0.2s ease;
+  color: currentColor;
 }
 
 .group:hover .arrow-icon,
