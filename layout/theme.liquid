@@ -19,9 +19,11 @@
     {{ content_for_header }}
   </head>
 
-  <body>
-    <main>
+  <body class="font-mono text-sm flex flex-col min-h-screen bg-black text-white">
+    {% section 'header' %}
+    <main class="p-5 grow">
       {{ content_for_layout }}
     </main>
+    {% section 'footer' %}
   </body>
 </html>

@@ -1,1 +1,48 @@
 @import 'tailwindcss' source('../..');
+
+/* Variables */
+:root {
+  --color-black: #1e1e1e;
+}
+
+/* Anchor Tag Hover Effect */
+a {
+  position: relative;
+  text-decoration: none;
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+}
+
+a:hover::after,
+a:focus::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+a.omit-effect::after {
+  height: 0 !important;
+}
+
+/* Arrow icon and hover bounce */
+.arrow-icon {
+  display: inline-block;
+  margin-left: 0.25em;
+  transition: transform 0.2s ease;
+}
+
+.group:hover .arrow-icon,
+a:focus .arrow-icon {
+  transform: translateX(0.25em);
+}

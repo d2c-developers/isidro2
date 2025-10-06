@@ -1,0 +1,23 @@
+{% assign anchor_classes = "group inline-flex items-center text-4xl md:text-6xl" %}
+{% capture arrow_icon %}
+  <span class="arrow-icon" aria-hidden="true">→</span>
+{% endcapture %}
+
+<ul class="space-y-6 md:space-y-12">
+  {% for collection in collections %}
+    {% unless collection.handle == 'home-page' %}
+      <li>
+    <a href="{{ collection.url }}" class="{{ anchor_classes }}">
+      {{ collection.title }}
+      {{ arrow_icon }}
+    </a>
+      </li>
+    {% endunless %}
+  {% endfor %}
+  <li>
+    <a href="{{ routes.all_products_collection_url }}" class="{{ anchor_classes }}">
+      View All
+      {{ arrow_icon }}
+    </a>
+  </li>
+</ul>

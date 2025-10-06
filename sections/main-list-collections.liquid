@@ -1,0 +1,18 @@
+
+<div class="space-y-6">
+  {% assign page_title = "All Series by " | append: shop.name %}
+  {% render 'page-description', title: page_title %}
+  {% render 'collection-list' %}
+</div>
+
+{% schema %}
+{
+  "name": "List Collections",
+  "settings": [],
+  "presets": [
+    {
+      "name": "List Collections"
+    }
+  ]
+}
+{% endschema %}

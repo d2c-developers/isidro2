@@ -9,7 +9,7 @@ export default defineConfig({
     cors: {
       origin: [
         defaultAllowedOrigins,
-        'https://johns-apparel.myshopify.com', // Store URL
+        'https://isiescasany.myshopify.com', // Store URL
       ],
     },
   },

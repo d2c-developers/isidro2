@@ -1,0 +1,65 @@
+<header class="flex flex-col justify-between p-6 md:flex-row space-y-6 md:space-y-0 md:items-start">
+  <div class="container flex items-end justify-between gap-6 md:justify-start md:items-center">
+    <a href="{{ routes.root_url }}">
+      <h1 class="text-xl leading-none">{{ shop.name }}</h1>
+    </a>
+    <nav class="flex items-center gap-6">
+      {% for link in linklists[section.settings.menu].links %}
+        <a href="{{ link.url }}" class="leading-none">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+  <div class="flex flex-col md:items-end justify-end gap-1 shrink-0">
+    {% for block in section.blocks %}
+      {% if block.type == 'info_line' %}
+        <p>{{ block.settings.text }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "NavigationMenu",
+      "default": "main-menu"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "info_line",
+      "name": "Info Line",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": [
+        {
+          "type": "info_line",
+          "settings": {
+            "text": "Artista y Dibujante"
+          }
+        },
+        {
+          "type": "info_line",
+          "settings": {
+            "text": "Buenos Aires, Argentina"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
