@@ -1,7 +1,14 @@
 <div class="space-y-3">
   {% if title != blank %}
     <h1>
-      {% unless template contains'list-collections' or template contains '404' %}Series: {% endunless %}
+      {% unless template contains'list-collections'
+        or template contains '404'
+        or template contains 'contact'
+        or template contains 'pages'
+        or template contains 'cart'
+      %}
+        Series:
+      {% endunless %}
       {{ title }}
     </h1>
   {% endif %}

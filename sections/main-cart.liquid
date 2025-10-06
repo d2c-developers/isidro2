@@ -1,0 +1,146 @@
+{% assign page_title = "Cart (" | append: cart.item_count | append: ")" %}
+<div class="space-y-6">
+  <div class="flex justify-between items-start gap-2">
+    {% render 'page-description', title: page_title %}
+    <div>
+      <a href="{{ routes.collections_url }}" class="group inline-flex items-center">
+        Continue shopping<span class="arrow-icon" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+
+  {% if cart.item_count > 0 %}
+    <form action="{{ routes.cart_update_url }}" method="post" class="space-y-6 border-t border-white/10 pt-6">
+      <div class="space-y-6">
+        {% for item in cart.items %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start border-b border-white/10 pb-6">
+            <div class="flex items-start gap-4">
+              <a href="{{ item.url }}" class="omit-effect aspect-[4/5] bg-amber-100/10 overflow-hidden relative w-full max-w-40">
+                {% if item.image %}
+                  <div class="absolute inset-0 h-full w-full bg-amber-100/10 overflow-hidden">
+                    {{ item.image | image_url: width: 300 | image_tag: widths: '150,300', sizes: '150px', class: 'w-full h-full object-cover absolute inset-0' }}
+                  </div>
+                {% else %}
+                  <div class=" absolute inset-0 h-full w-full bg-amber-100/10">
+                    <span class="text-white/40">No image</span>
+                  </div>
+                {% endif %}
+              </a>
+              <div class="space-y-2">
+                <h3 class="text-lg">
+                  <a href="{{ item.url }}" class="hover:underline">Title: {{ item.product.title }}</a>
+                </h3>
+                
+                {% unless item.product.has_only_default_variant %}
+                  <div class="text-sm text-white/60">
+                    {% for option in item.options_with_values %}
+                      {{ option.name }}: {{ option.value }}
+                      {% unless forloop.last %} / {% endunless %}
+                    {% endfor %}
+                  </div>
+                {% endunless %}
+  
+                {% if item.original_price != item.final_price %}
+                  <div class="text-sm">
+                    <span class="line-through opacity-60 mr-2">{{ item.original_price | money }}</span>
+                    <span>{{ item.final_price | money }}</span>
+                  </div>
+                {% else %}
+                  <div>{{ item.final_price | money }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between md:justify-end gap-4">
+              <div class="flex items-center gap-2">
+                <label for="quantity-{{ forloop.index }}" class="sr-only">Quantity</label>
+                <input
+                  type="number"
+                  id="quantity-{{ forloop.index }}"
+                  name="updates[{{ item.key }}]"
+                  value="{{ item.quantity }}"
+                  min="0"
+                  class="w-16 border border-white/10 px-2 py-1 bg-transparent rounded text-center"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                >
+              </div>
+              
+              <a
+                href="{{ item.url_to_remove }}"
+                class="text-sm text-white/60 hover:text-white underline"
+                aria-label="Remove {{ item.product.title }}"
+              >
+                Remove
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button
+          type="submit"
+          name="update"
+          class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded"
+        >
+          Update cart
+        </button>
+
+        <div class="text-right space-y-2">
+          <div class="text-lg">
+            <span class="text-white/60">Subtotal:</span>
+            <span class="ml-2">{{ cart.total_price | money }}</span>
+          </div>
+          {% if cart.total_discount > 0 %}
+            <div class="text-sm text-green-400">
+              You saved {{ cart.total_discount | money }}!
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+
+    <div class="border-t border-white/10 pt-6">
+      <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+        <div></div>
+        <div class="flex flex-col gap-4 w-full md:w-auto">
+          <a
+            href="{{ routes.checkout_url }}"
+            class="omit-effect text-center px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium cursor-pointer"
+          >
+            Checkout
+            <span class="arrow-icon" aria-hidden="true">→</span>
+          </a>
+          <div class="text-sm text-white/60">
+            {% if cart.requires_shipping %}
+              Taxes and shipping calculated at checkout
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="space-y-6 py-12">
+      <h1>Your cart is empty</h1>
+      <p class="text-white/60">Looks like you haven't added anything to your cart yet.</p>
+      <a
+        href="{{ routes.collections_url }}"
+        class="group inline-flex items-center px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium"
+      >
+        Start shopping<span class="arrow-icon" aria-hidden="true">→</span>
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+
+<div class="mt-64"></div>
+{% render 'cta-callout' %}
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": []
+}
+{% endschema %}
