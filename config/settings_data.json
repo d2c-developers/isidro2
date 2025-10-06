@@ -1,5 +1,46 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
-  "current": "Default",
+  "current": {
+    "sections": {
+      "header": {
+        "type": "header",
+        "blocks": {
+          "info_line_g8tYJr": {
+            "type": "info_line",
+            "settings": {
+              "text": "Artista y Dibujante"
+            }
+          },
+          "info_line_XqgezP": {
+            "type": "info_line",
+            "settings": {
+              "text": "Buenos Aires, Argentina"
+            }
+          }
+        },
+        "block_order": [
+          "info_line_g8tYJr",
+          "info_line_XqgezP"
+        ],
+        "settings": {
+          "menu": "main-menu"
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": []
+  },
   "presets": {
     "Default": {}
   }
