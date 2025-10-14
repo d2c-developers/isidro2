@@ -1,23 +1,36 @@
 <footer class="p-6 flex flex-col gap-6">
-  <nav>
-    <ul class="flex flex-col gap-3 md:flex-row">
-      <li>
-        <a href="{{ routes.root_url }}">{{ shop.name }}</a>
-      </li>
-      {% for link in linklists.footer.links %}
+  <div class="flex flex-col gap-6 md:flex-row justify-between md:items-center">
+    <nav>
+      <ul class="flex flex-col gap-3 md:flex-row">
         <li>
-          <a href="{{ link.url }}">{{ link.title }}</a>
+          <a href="{{ routes.root_url }}">{{ shop.name }}</a>
         </li>
-      {% endfor %}
-    </ul>
-  </nav>
+        {% for link in linklists.footer.links %}
+          <li>
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    
+    {% if section.settings.enable_social_media %}
+      {% render 'social-media' %}
+    {% endif %}
+  </div>
   <p class="text-white/60">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
 </footer>
 
 {% schema %}
 {
   "name": "Footer",
-  "settings": [],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_social_media",
+      "label": "Enable Social Media Links",
+      "default": true
+    }
+  ],
   "presets": [
     {
       "name": "Footer"

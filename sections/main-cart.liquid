@@ -10,10 +10,10 @@
   </div>
 
   {% if cart.item_count > 0 %}
-    <form action="{{ routes.cart_update_url }}" method="post" class="space-y-6 border-t border-white/10 pt-6">
+    <div id="cart-items" class="space-y-6 border-t border-white/10 pt-6">
       <div class="space-y-6">
         {% for item in cart.items %}
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start border-b border-white/10 pb-6">
+          <div class="cart-item grid grid-cols-1 md:grid-cols-2 gap-4 items-start border-b border-white/10 pb-6" data-item-key="{{ item.key }}">
             <div class="flex items-start gap-4">
               <a href="{{ item.url }}" class="omit-effect aspect-[4/5] bg-amber-100/10 overflow-hidden relative w-full max-w-40">
                 {% if item.image %}
@@ -57,40 +57,33 @@
                 <input
                   type="number"
                   id="quantity-{{ forloop.index }}"
-                  name="updates[{{ item.key }}]"
+                  data-item-key="{{ item.key }}"
                   value="{{ item.quantity }}"
                   min="0"
-                  class="w-16 border border-white/10 px-2 py-1 bg-transparent rounded text-center"
+                  class="quantity-input w-16 border border-white/10 px-2 py-1 bg-transparent rounded text-center"
                   inputmode="numeric"
                   pattern="[0-9]*"
                 >
               </div>
               
-              <a
-                href="{{ item.url_to_remove }}"
-                class="text-sm text-white/60 hover:text-white underline"
+              <button
+                type="button"
+                data-item-key="{{ item.key }}"
+                class="remove-item text-sm text-white/60 hover:text-white underline cursor-pointer"
                 aria-label="Remove {{ item.product.title }}"
               >
                 Remove
-              </a>
+              </button>
             </div>
           </div>
         {% endfor %}
       </div>
 
-      <div class="flex justify-between items-center">
-        <button
-          type="submit"
-          name="update"
-          class="px-4 py-2 border border-white/10 hover:bg-white hover:text-black transition-colors rounded"
-        >
-          Update cart
-        </button>
-
+      <div class="flex justify-end items-center">
         <div class="text-right space-y-2">
           <div class="text-lg">
             <span class="text-white/60">Subtotal:</span>
-            <span class="ml-2">{{ cart.total_price | money }}</span>
+            <span class="ml-2" id="cart-subtotal">{{ cart.total_price | money }}</span>
           </div>
           {% if cart.total_discount > 0 %}
             <div class="text-sm text-green-400">
@@ -99,14 +92,14 @@
           {% endif %}
         </div>
       </div>
-    </form>
+    </div>
 
     <div class="border-t border-white/10 pt-6">
       <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
         <div></div>
         <div class="flex flex-col gap-4 w-full md:w-auto">
           <a
-            href="{{ routes.checkout_url }}"
+            href="/checkout"
             class="omit-effect text-center px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium cursor-pointer"
           >
             Checkout
@@ -137,6 +130,134 @@
 
 <div class="mt-64"></div>
 {% render 'cta-callout' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.quantity-input').forEach(function(input) {
+    input.addEventListener('change', function() {
+      const itemKey = this.dataset.itemKey;
+      const quantity = parseInt(this.value);
+      
+      if (quantity < 0) {
+        this.value = 0;
+        return;
+      }
+      
+      updateCartItem(itemKey, quantity);
+    });
+  });
+
+  document.querySelectorAll('.remove-item').forEach(function(button) {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const itemKey = this.dataset.itemKey;
+      removeCartItem(itemKey);
+    });
+  });
+
+  function updateCartItem(itemKey, quantity) {
+    fetch('/cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        updates: {
+          [itemKey]: quantity
+        }
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      reloadCartSection();
+    })
+    .catch(error => {
+      console.error('Error updating cart:', error);
+      window.location.reload();
+    });
+  }
+
+  function removeCartItem(itemKey) {
+    fetch('/cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        updates: {
+          [itemKey]: 0
+        }
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      reloadCartSection();
+    })
+    .catch(error => {
+      console.error('Error removing item:', error);
+      window.location.reload();
+    });
+  }
+
+  function reloadCartSection() {
+    fetch('/cart.js')
+      .then(response => response.json())
+      .then(cart => {
+        if (cart.item_count === 0) {
+          window.location.reload();
+        } else {
+          fetch(window.location.pathname)
+            .then(response => response.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              const newCartSection = doc.querySelector('#cart-items');
+              const currentCartSection = document.querySelector('#cart-items');
+              
+              if (newCartSection && currentCartSection) {
+                currentCartSection.innerHTML = newCartSection.innerHTML;
+                reinitializeEventListeners();
+              }
+            })
+            .catch(error => {
+              console.error('Error reloading cart:', error);
+              window.location.reload();
+            });
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching cart:', error);
+        window.location.reload();
+      });
+  }
+
+  function reinitializeEventListeners() {
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+      input.addEventListener('change', function() {
+        const itemKey = this.dataset.itemKey;
+        const quantity = parseInt(this.value);
+        
+        if (quantity < 0) {
+          this.value = 0;
+          return;
+        }
+        
+        updateCartItem(itemKey, quantity);
+      });
+    });
+
+    document.querySelectorAll('.remove-item').forEach(function(button) {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const itemKey = this.dataset.itemKey;
+        removeCartItem(itemKey);
+      });
+    });
+  }
+});
+</script>
 
 {% schema %}
 {

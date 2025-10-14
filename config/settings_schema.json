@@ -6,5 +6,35 @@
     "theme_author": "THEME_AUTHOR",
     "theme_documentation_url": "https://THEME_DOCUMENTATION_URL.com/",
     "theme_support_url": "https://THEME_SUPPORT_URL.com/"
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "url",
+        "id": "instagram_url",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "url",
+        "id": "facebook_url",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "url",
+        "id": "twitter_url",
+        "label": "Twitter URL"
+      },
+      {
+        "type": "url",
+        "id": "youtube_url",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "url",
+        "id": "linkedin_url",
+        "label": "LinkedIn URL"
+      }
+    ]
   }
 ]
