@@ -9,6 +9,10 @@
  */
 {
   "current": {
+    "instagram_url": "https://www.instagram.com/",
+    "facebook_url": "https://www.facebook.com/",
+    "twitter_url": "https://x.com/",
+    "youtube_url": "https://www.youtube.com/",
     "sections": {
       "header": {
         "type": "header",
@@ -36,7 +40,9 @@
       },
       "footer": {
         "type": "footer",
-        "settings": {}
+        "settings": {
+          "enable_social_media": true
+        }
       }
     },
     "content_for_index": []
