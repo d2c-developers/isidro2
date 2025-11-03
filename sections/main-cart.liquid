@@ -201,10 +201,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  function updateCartCount(count) {
+    const cartLinkCount = document.querySelector('.cart-link-count');
+    if (cartLinkCount) {
+      cartLinkCount.textContent = `(${count})`;
+    }
+  }
+
   function reloadCartSection() {
     fetch('/cart.js')
       .then(response => response.json())
       .then(cart => {
+        updateCartCount(cart.item_count);
         if (cart.item_count === 0) {
           window.location.reload();
         } else {

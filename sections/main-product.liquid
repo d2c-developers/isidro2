@@ -22,16 +22,16 @@
     </div>
 
     <div class="space-y-6">
-      {% render 'product-page-description', title: product.title, description: product.description %}
+      {% render 'product-page-description', title: product.title, description: product.description, section_id: section.id %}
 
-      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="space-y-4">
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="space-y-4" id="product-form">
+        <input type="hidden" name="id" id="product-variant-id-{{ section.id }}" value="{{ product.selected_or_first_available_variant.id }}">
 
         {% if product.has_only_default_variant == false %}
           {% for option in product.options_with_values %}
             <div class="space-y-2">
               <label for="Option-{{ section.id }}-{{ forloop.index0 }}" class="block">{{ option.name }}</label>
-              <select id="Option-{{ section.id }}-{{ forloop.index0 }}" name="options[{{ option.name }}]" class="w-full border border-white/10 p-3 bg-transparent rounded text-lg">
+              <select id="Option-{{ section.id }}-{{ forloop.index0 }}" name="options[{{ option.name }}]" class="product-variant-select-{{ section.id }} w-full border border-white/10 p-3 bg-transparent rounded text-lg" data-option-index="{{ forloop.index0 }}">
                 {% for value in option.values %}
                   <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
                 {% endfor %}
@@ -48,6 +48,7 @@
         <button
           type="submit"
           name="add"
+          id="product-add-to-cart-button-{{ section.id }}"
           class="w-full px-6 py-3 bg-white text-black hover:bg-white/90 transition-colors rounded font-medium cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
           {% if product.selected_or_first_available_variant.available == false%}
             disabled
@@ -69,6 +70,57 @@
 {% endif %}
 
 {% render 'cta-callout' %}
+
+<script>
+  (function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      {% if product %}
+      const sectionId = '{{ section.id }}';
+      const productData = {{ product | json }};
+      const variantSelects = document.querySelectorAll('.product-variant-select-' + sectionId);
+      const variantIdInput = document.getElementById('product-variant-id-' + sectionId);
+      const priceElement = document.getElementById('product-price-' + sectionId);
+      const compareAtPriceElement = document.getElementById('product-compare-at-price-' + sectionId);
+      if (!productData || !productData.variants) return;
+
+      {% assign current_variant = product.selected_or_first_available_variant %}
+      const initialPrice = {{ current_variant.price | money | json }};
+      const usesComma = initialPrice.includes(',') && initialPrice.match(/,\d{2}$/);
+
+      function formatMoney(cents) {
+        const currencySymbol = '{{ cart.currency.symbol }}';
+        const amount = (cents / 100).toFixed(2);
+        const formatted = usesComma ? amount.replace('.', ',') : amount;
+        return currencySymbol + formatted;
+      }
+
+      function updateVariant() {
+        const selectedOptions = Array.from(variantSelects).map(select => select.value);
+        const selectedVariant = productData.variants.find(variant => 
+          variant.options.every((option, index) => option === selectedOptions[index])
+        );
+
+        if (!selectedVariant) return
+        variantIdInput.value = selectedVariant.id;
+        if (priceElement) {
+          priceElement.textContent = formatMoney(selectedVariant.price);
+        }
+
+        if (compareAtPriceElement) {
+          if (selectedVariant.compare_at_price > selectedVariant.price) {
+            compareAtPriceElement.textContent = formatMoney(selectedVariant.compare_at_price);
+            compareAtPriceElement.style.display = 'inline';
+          } else {
+            compareAtPriceElement.style.display = 'none';
+          }
+        }
+      }
+
+      variantSelects.forEach(select => select.addEventListener('change', updateVariant));
+      {% endif %}
+    });
+  })();
+</script>
 
 {% schema %}
 {

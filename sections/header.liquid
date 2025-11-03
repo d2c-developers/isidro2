@@ -7,6 +7,13 @@
       {% for link in linklists[section.settings.menu].links %}
         <a href="{{ link.url }}" class="leading-none">{{ link.title }}</a>
       {% endfor %}
+      <a href="/cart" class="leading-none">Cart 
+        {% if cart.item_count > 0 %}
+          <span class="cart-link-count">({{ cart.item_count }})</span>
+          {% else %}
+          <span class="cart-link-count">(0)</span>
+        {% endif %}
+      </a>
     </nav>
   </div>
   <div class="flex flex-col md:items-end justify-end gap-1 shrink-0 text-white/60">

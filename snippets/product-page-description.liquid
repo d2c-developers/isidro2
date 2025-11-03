@@ -6,12 +6,12 @@
         {{ title }}
       </h1>
     {% endif %}
-    <div class="">
+    <div class="product-price-wrapper">
       {% assign current_variant = product.selected_or_first_available_variant %}
       {% if current_variant.compare_at_price > current_variant.price %}
-        <span class="line-through opacity-60 mr-2">{{ current_variant.compare_at_price | money }}</span>
+        <span id="product-compare-at-price-{{ section_id }}" class="line-through opacity-60 mr-2">{{ current_variant.compare_at_price | money }}</span>
       {% endif %}
-      <span>{{ current_variant.price | money }}</span>
+      <span id="product-price-{{ section_id }}">{{ current_variant.price | money }}</span>
     </div>
   </div>
  
